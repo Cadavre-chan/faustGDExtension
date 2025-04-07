@@ -1,0 +1,5 @@
+godot-cpp
+*.os
+.vscode
+*.so
+*.json

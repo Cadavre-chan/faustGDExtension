@@ -1,0 +1,9 @@
+{
+    "C_Cpp.default.systemIncludePath": [
+        "/home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/classes/ /home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/core/ /home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/**"
+    ],
+    "C_Cpp.default.includePath": [
+        "/home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/classes/ /home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/core/ /home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/**"
+    ],
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++"
+}

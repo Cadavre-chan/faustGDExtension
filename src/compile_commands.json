@@ -1,0 +1,8 @@
+[
+    {
+      "directory": "/path/to/your/project",
+      "command": "g++ -I/path/to/includes -std=c++17 -c src/gdexample.cpp",
+      "file": "src/gdexample.cpp"
+    }
+  ]
+  
