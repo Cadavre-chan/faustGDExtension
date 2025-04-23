@@ -3,14 +3,12 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/classes/",
-                "/home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/core/",
-                "/home/kad/grame_internship/gdextension_cpp_example/godot-cpp/gen/include/godot_cpp/variant/"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../godot-cpp/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang++",
-            "cStandard": "c23",
-            "cppStandard": "c++23",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64"
         }
     ],

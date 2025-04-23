@@ -16,6 +16,31 @@ env = SConscript("godot-cpp/SConstruct")
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
 
+# Add the include paths for the godot-cpp headers (including subdirectories)
+godot_include_path = os.path.abspath("godot-cpp/include")
+
+# Use os.walk to recursively include all subdirectories inside godot-cpp/include
+for dirpath, dirnames, filenames in os.walk(godot_include_path):
+    # Add each directory to the include path
+    env.Append(CPPPATH=[dirpath])
+
+# This block will output the Compilation Database (compile_commands.json)
+env['CCFLAGS'] += ['-g', '-Wall']  # Optionally add flags for debugging or warnings
+env['CXXFLAGS'] += ['-g', '-Wall']  # Optionally add flags for debugging or warnings
+
+# Explicitly specify the target path for the compile_commands.json file
+compile_commands_path = os.path.abspath("compile_commands.json")
+
+# Generate the compilation database (compile_commands.json)
+compile_command = env.Command(compile_commands_path, [], [
+    'clang -c $SOURCE -o $TARGET -I%s' % godot_include_path
+])
+
+
+# Generate the compilation database (compile_commands.json) without source files as input
+# Just use a dummy file (empty list) to generate compile_commands.json without the conflicting source files
+env.Depends(compile_command, sources)
+
 if env["platform"] == "macos":
     library = env.SharedLibrary(
         "demo/bin/libgdexample.{}.{}.framework/libgdexample.{}.{}".format(

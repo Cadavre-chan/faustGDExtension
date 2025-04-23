@@ -8,7 +8,4 @@ using namespace godot;
 void initialize_example_module(ModuleInitializationLevel p_level);
 void uninitialize_example_module(ModuleInitializationLevel p_level);
 
-// void initialize_sine_generator(ModuleInitializationLevel p_level);
-// void uninitialize_sine_generator(ModuleInitializationLevel p_level);
-
 #endif // GDEXAMPLE_REGISTER_TYPES_H
