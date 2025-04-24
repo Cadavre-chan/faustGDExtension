@@ -1,18 +1,16 @@
 extends Node
 
-var faust2godot: Faust2Godot
-var stream_player: AudioStreamPlayer
-var stream: AudioStreamGenerator
+var testBusIndex
+var faustEffect
+var audioPlayer
 
 func _ready():
 	print("Ready!")
-	faust2godot = Faust2Godot.new()
-	add_child(faust2godot)
-	set_process(true)
-	print("Begin initialization!")
-	faust2godot.init_ext()
-
-
-
-func _process(_delta):
-	faust2godot.process()
+	testBusIndex = AudioServer.get_bus_index("TestBus")
+	faustEffect = Faust2Godot.new()
+	AudioServer.add_bus_effect(testBusIndex, faustEffect)
+	audioPlayer = AudioStreamPlayer.new()
+	add_child(audioPlayer)
+	audioPlayer.stream = load("res://assets/file_example_WAV_10MG.wav")
+	audioPlayer.bus = "TestBus"
+	audioPlayer.play()

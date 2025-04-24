@@ -11,6 +11,7 @@ using namespace godot;
 void initialize_example_module(ModuleInitializationLevel p_level) {
     if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) return;
     ClassDB::register_class<Faust2Godot>();
+	ClassDB::register_class<Faust2GodotEffectInstance>();
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {}

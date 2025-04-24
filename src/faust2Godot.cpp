@@ -13,7 +13,7 @@
 
 using namespace godot;
 
-Faust2Godot::Faust2Godot() {
+Faust2GodotEffectInstance::Faust2GodotEffectInstance() {
     UtilityFunctions::print("Starting initialization!");
 
     // general setup
@@ -32,7 +32,7 @@ Faust2Godot::Faust2Godot() {
     this->init_dsp(dspObject, sampleRate);
 }
 
-Faust2Godot::~Faust2Godot() {
+Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
     if (_dsp) {
         if (dspObject) {
             destroyDSP(dspObject);
@@ -50,11 +50,14 @@ Faust2Godot::~Faust2Godot() {
     }
 }
 
-// void Faust2Godot::_bind_methods() {
-//     ClassDB::bind_method(D_METHOD("process"), &Faust2Godot::process);
-// }
+void Faust2GodotEffectInstance::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("_process", "input_buffer", "output_buffer", "frames"), &Faust2GodotEffectInstance::_process);
+}
 
-void Faust2Godot::process(const AudioFrame *src, AudioFrame *dst, int frame_count) {
+void Faust2GodotEffectInstance::_process(const AudioFrame *src, AudioFrame *dst, int frame_count) {
+    
+    
+
     for (int i = 0; i < frame_count; i++) {
         input[0][i] = src[i].left;
         input[1][i] = src[i].right;
@@ -68,7 +71,7 @@ void Faust2Godot::process(const AudioFrame *src, AudioFrame *dst, int frame_coun
     }
 }
 
-void Faust2Godot::loadDSPLibrary() {
+void Faust2GodotEffectInstance::loadDSPLibrary() {
     if (_dsp == nullptr) {
         UtilityFunctions::print("Failed to load DSP library.\n");
         return;
@@ -82,9 +85,24 @@ void Faust2Godot::loadDSPLibrary() {
     destroyDSP = (void(*)(void*))dlsym(_dsp, "deletemydsp");
 }
 
-void Faust2Godot::loadDSP() {
+void Faust2GodotEffectInstance::loadDSP() {
     this->_dsp = dlopen(dspPath.c_str(), RTLD_LAZY);
     if (!this->_dsp) {
         UtilityFunctions::print("Failed to load DSP.\n");
     }
+}
+
+Ref<AudioEffectInstance> Faust2Godot::_instantiate() {
+    return Ref<AudioEffectInstance> (memnew(Faust2GodotEffectInstance));
+}
+
+Faust2Godot::Faust2Godot() {
+
+}
+Faust2Godot::~Faust2Godot() {
+
+}
+
+void Faust2Godot::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("_instantiate"), &Faust2Godot::_instantiate);
 }
