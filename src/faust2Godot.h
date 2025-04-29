@@ -15,33 +15,22 @@
 #include <godot_cpp/classes/time.hpp>
 #include <godot_cpp/classes/audio_frame.hpp>
 #include <godot_cpp/classes/audio_effect.hpp>
-
+#include <godot_cpp/classes/weak_ref.hpp>
 
 namespace godot {
-
-class Faust2Godot : public godot::AudioEffect {
-    GDCLASS(Faust2Godot, godot::AudioEffect);
-
-    public:
-    Ref<AudioEffectInstance> _instantiate() override;
-    static void _bind_methods();
-    Faust2Godot();
-    ~Faust2Godot();
-    
-};
-
 class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
     GDCLASS(Faust2GodotEffectInstance, godot::AudioEffectInstance);
-    friend class Faust2Godot;
-    Ref<Faust2Godot> base;
 
     private:
     
         float sampleRate; // AudioServer sample rate
+        float *drive;
+        float *offset;
+
         
         // DSP stuff
         
-        std::string dspPath = "/home/kad/grame_internship/faust_ex/libbar.so"; // path to DSP .so file
+        std::string dspPath = "/home/kad/grame_internship/faust_ex/libfoo.so"; // path to DSP .so file
         
         void *_dsp = NULL; // pointer to DSP shared object
         
@@ -58,22 +47,49 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
         void*(*createDSP)() = NULL;
         void(*destroyDSP)(void*)= NULL;
         
+        float*(*getDrivePointer)(void*) = NULL;
+        float*(*getOffsetPointer)(void*) = NULL;
+
+        void(*setDriveValue)(void*, float) = NULL;
+        void(*setOffsetValue)(void*, float) = NULL;
+
+        const float(*getDriveValue)(void*) = NULL;
+        const float(*getOffsetValue)(void*) = NULL;
+        
+        
         float **input = NULL;
         float **output = NULL;
-
-    public:
-    
+        
+        public:
+        
         Faust2GodotEffectInstance();
         ~Faust2GodotEffectInstance();
-
+        
         virtual void _process(const AudioFrame *src, AudioFrame *dst, int frame_count); // function called at every cycle
         
         static void _bind_methods();
-    
+
+        float getDrive();
+        float getOffset();
+        void setDrive(float value);
+        void setOffset(float value);
 };
 
+class Faust2Godot : public godot::AudioEffect {
+    GDCLASS(Faust2Godot, godot::AudioEffect);
 
-
+    public:
+    Ref<AudioEffectInstance> _instantiate() override;
+    static void _bind_methods();
+    Faust2Godot();
+    ~Faust2Godot();
+    
+    Ref<Faust2GodotEffectInstance> instance = nullptr;
+    float getDrive();
+    float getOffset();
+    void setDrive(float value);
+    void setOffset(float value);
+};
 
 }
 

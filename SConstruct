@@ -24,6 +24,12 @@ for dirpath, dirnames, filenames in os.walk(godot_include_path):
     # Add each directory to the include path
     env.Append(CPPPATH=[dirpath])
 
+godot_include_path_bis = os.path.abspath("godot-cpp/gen")
+
+for dirpath, dirnames, filenames in os.walk(godot_include_path_bis):
+    # Add each directory to the include path
+    env.Append(CPPPATH=[dirpath])
+
 # This block will output the Compilation Database (compile_commands.json)
 env['CCFLAGS'] += ['-g', '-Wall']  # Optionally add flags for debugging or warnings
 env['CXXFLAGS'] += ['-g', '-Wall']  # Optionally add flags for debugging or warnings

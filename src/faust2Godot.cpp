@@ -51,12 +51,9 @@ Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
 }
 
 void Faust2GodotEffectInstance::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("_process", "input_buffer", "output_buffer", "frames"), &Faust2GodotEffectInstance::_process);
 }
 
 void Faust2GodotEffectInstance::_process(const AudioFrame *src, AudioFrame *dst, int frame_count) {
-    
-    
 
     for (int i = 0; i < frame_count; i++) {
         input[0][i] = src[i].left;
@@ -83,6 +80,13 @@ void Faust2GodotEffectInstance::loadDSPLibrary() {
     getNumOutputs = (int(*)(void*))dlsym(_dsp, "getNumOutputsmydsp");
     createDSP = (void*(*)())dlsym(_dsp, "newmydsp");
     destroyDSP = (void(*)(void*))dlsym(_dsp, "deletemydsp");
+
+    getDrivePointer = (float*(*)(void*))dlsym(_dsp, "getDrivePointer");
+    getOffsetPointer = (float*(*)(void*))dlsym(_dsp, "getOffsetPointer");
+    setDriveValue = (void(*)(void*, float))dlsym(_dsp, "setDriveValue");
+    setOffsetValue = (void(*)(void*, float))dlsym(_dsp, "setOffsetValue");
+    getDriveValue = (const float(*)(void*))dlsym(_dsp, "getDriveValue");
+    getOffsetValue = (const float(*)(void*))dlsym(_dsp, "getOffsetValue");
 }
 
 void Faust2GodotEffectInstance::loadDSP() {
@@ -92,8 +96,40 @@ void Faust2GodotEffectInstance::loadDSP() {
     }
 }
 
+float Faust2GodotEffectInstance::getDrive() {
+    drive = getDrivePointer(dspObject);
+
+    return *drive;
+}
+
+float Faust2GodotEffectInstance::getOffset() {
+    offset = getOffsetPointer(dspObject);
+
+    return *offset;
+}
+
+void Faust2GodotEffectInstance::setDrive(float value) {
+    drive = getDrivePointer(dspObject);
+
+    setDriveValue(dspObject, value);
+}
+
+void Faust2GodotEffectInstance::setOffset(float value) {
+    offset = getOffsetPointer(dspObject);
+
+    setOffsetValue(dspObject, value);
+}
+
+
+
+
+
 Ref<AudioEffectInstance> Faust2Godot::_instantiate() {
-    return Ref<AudioEffectInstance> (memnew(Faust2GodotEffectInstance));
+    Ref<Faust2GodotEffectInstance> effectInstance = memnew(Faust2GodotEffectInstance);
+
+    instance = effectInstance;
+
+    return effectInstance;
 }
 
 Faust2Godot::Faust2Godot() {
@@ -103,6 +139,26 @@ Faust2Godot::~Faust2Godot() {
 
 }
 
+float Faust2Godot::getDrive() {
+    return instance->getDrive();
+}
+
+float Faust2Godot::getOffset() {
+    return instance->getOffset();
+}
+
+void Faust2Godot::setDrive(float value) {
+    instance->setDrive(value);
+}
+
+void Faust2Godot::setOffset(float value) {
+    instance->setOffset(value);
+}
+
 void Faust2Godot::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("_instantiate"), &Faust2Godot::_instantiate);
+    ClassDB::bind_method(D_METHOD("instantiate"), &Faust2Godot::_instantiate);
+    ClassDB::bind_method(D_METHOD("getDrive"), &Faust2Godot::getDrive);
+    ClassDB::bind_method(D_METHOD("getOffset"), &Faust2Godot::getOffset);
+    ClassDB::bind_method(D_METHOD("setDrive", "value"), &Faust2Godot::setDrive);
+    ClassDB::bind_method(D_METHOD("setOffset", "value"), &Faust2Godot::setOffset);
 }
