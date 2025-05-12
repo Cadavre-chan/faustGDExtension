@@ -13,5 +13,4 @@ func _ready():
 	add_child(audioPlayer)
 	audioPlayer.stream = load("res://assets/file_example_WAV_10MG.wav")
 	audioPlayer.bus = "TestBus"
-	faustEffect.setDrive(5)
 	audioPlayer.play()

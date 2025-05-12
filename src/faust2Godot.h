@@ -22,38 +22,19 @@
 
 
 namespace godot {
-class FaustDSPWrapper : public godot::Object {
-    GDCLASS(FaustDSPWrapper, Object);
-
-    private:
-        float **input = NULL;
-        float **output = NULL;
-
-        void *handle;
-        dsp *dsp_instance;
-        MapUI map_ui;
-
-    public:
-        static void _bind_methods();
-        FaustDSPWrapper();
-        ~FaustDSPWrapper();
-
-        void init(godot::String path, int sample_rate);
-        void set_param(godot::String path, float value);
-        float get_param(godot::String path);
-        godot::Array get_all_params();
-
-        void compute(const AudioFrame *src, AudioFrame *dst, int frames);
-
-};
 
 class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
     GDCLASS(Faust2GodotEffectInstance, godot::AudioEffectInstance);
-
+    
     private:
-        float sampleRate;
+        int sampleRate;
+        float **input = NULL;
+        float **output = NULL;
+        
+        void *handle;
+        dsp *dsp_instance;
+        MapUI *map_ui;
         godot::String dspPath = "/home/kad/grame_internship/faustGDExtension/demo/dsp/libfoo.so"; // path to DSP .so file
-        FaustDSPWrapper dspWrapper;
 
     public:
         Faust2GodotEffectInstance();
@@ -62,24 +43,18 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
         
         static void _bind_methods();
 
-        void init(godot::String path, int sample_rate) {
-            dspWrapper.init(path, sample_rate);
-        };
+        void init(godot::String path, int sample_rate);
     
     
-        void set_param(godot::String path, float value) {
-            dspWrapper.set_param(path, value);
-        };
+        void set_param(godot::String path, float value);
     
     
-        float get_param(godot::String path) {
-            return dspWrapper.get_param(path);
-        };
+        float get_param(godot::String path);
     
     
-        godot::Array get_all_params() {
-            return dspWrapper.get_all_params();
-        };
+        void compute(const AudioFrame *src, AudioFrame *dst, int frames);
+
+        godot::Array get_all_params();
 };
 
 class Faust2Godot : public godot::AudioEffect {
@@ -95,30 +70,22 @@ class Faust2Godot : public godot::AudioEffect {
 
 
         void init(godot::String path, int sample_rate) {
-            if (instance !=nullptr) {
-                instance.ptr()->init(path, sample_rate);
-            }
+            instance.ptr()->init(path, sample_rate);
         };
 
 
         void set_param(godot::String path, float value) {
-            if (instance != nullptr) {
-                instance.ptr()->set_param(path, value);
-            }
+            instance.ptr()->set_param(path, value);
         };
 
 
         float get_param(godot::String path) {
-            if (instance != nullptr) {
-                return instance.ptr()->get_param(path);
-            }
+            return instance.ptr()->get_param(path);
         };
 
 
         godot::Array get_all_params() {
-            if (instance != nullptr) {
-                return instance.ptr()->get_all_params();
-            }
+            return instance.ptr()->get_all_params();
         };
 };
 
