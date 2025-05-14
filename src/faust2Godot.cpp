@@ -77,6 +77,8 @@ void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
     for (int i = 0; i < names.size(); i++) {
         UtilityFunctions::print(names[i]);
     }
+
+    this->set_param("/foo/drive", 5.0f);
 }
 
 void Faust2GodotEffectInstance::set_param(godot::String path, float value) {
@@ -114,6 +116,7 @@ void Faust2GodotEffectInstance::compute(const AudioFrame *src, AudioFrame *dst, 
         dst[i].right = output[1][i];
     }
 }
+
 Faust2Godot::Faust2Godot() {}
 Faust2Godot::~Faust2Godot() {}
 

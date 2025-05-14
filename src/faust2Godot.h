@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <godot_cpp/classes/ref_counted.hpp>
+// #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/audio_stream_generator_playback.hpp>
 #include <godot_cpp/classes/audio_stream_generator.hpp>
 #include <godot_cpp/classes/audio_server.hpp>
