@@ -2,6 +2,7 @@
 
 #include "faust2Godot.h"
 #include "faustEditorPlugin.h"
+#include "faustDSPManager.h"
 
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
@@ -14,6 +15,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
     ClassDB::register_class<Faust2Godot>();
 	ClassDB::register_class<Faust2GodotEffectInstance>();
 	ClassDB::register_class<FaustEditorPlugin>();
+	ClassDB::register_class<FaustDSPManager>();
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {}

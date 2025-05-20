@@ -21,7 +21,7 @@ class FaustDSPManager : public Node {
 
         static FaustDSPManager *getSingleton();
 
-        void loadDSP(const godot::String path);
+        void loadDSP(const godot::String &path);
 
         Ref<Faust2Godot> getDSPInstance() const;
 

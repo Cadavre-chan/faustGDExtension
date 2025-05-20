@@ -2,7 +2,10 @@
 
 using namespace godot;
 
-FaustEditorPlugin::FaustEditorPlugin() {}
+FaustEditorPlugin::FaustEditorPlugin(Ref<Faust2Godot> faustEffectRef, ExtendedMapUI *mapUIPtr) {
+    faustEffect = faustEffectRef;
+    mapUI = mapUIPtr;
+}
 
 FaustEditorPlugin::~FaustEditorPlugin() {}
 
@@ -26,8 +29,8 @@ void FaustEditorPlugin::_enter_tree() {
     for (int i = 0; i < paramPaths.size(); i++) {
         godot::String path = paramPaths[i];
 
-        float min = 0.0;
-        float max = 1.0;
+        float min = mapUI->getParamMin(path.utf8().get_data());
+        float max = mapUI->getParamMax(path.utf8().get_data());
         float init = faustEffect->get_param(path);
 
         Label *label = memnew(Label);
@@ -53,4 +56,20 @@ void FaustEditorPlugin::_exit_tree() {
     memdelete(faustPanel);
     faustPanel = nullptr;
     sliderMap.clear();
+}
+
+
+void FaustEditorPlugin::_on_slider_changed(double value, godot::String path) {
+    if (faustEffect.is_valid()) {
+        faustEffect->set_param(path, value);
+        UtilityFunctions::print("Updated param: ", path, " to ", value);
+    }
+}
+
+void FaustEditorPlugin::setMapUI(ExtendedMapUI *mapUIPtr) {
+    mapUI = mapUIPtr;
+}
+
+void FaustEditorPlugin::setDSPInstance(Ref<Faust2Godot> DSPInstance) {
+    faustEffect = DSPInstance;
 }

@@ -1,6 +1,8 @@
 #ifndef FAUST2GODOT_HPP
 #define FAUST2GODOT_HPP
 
+#include "extendedMapUI.h"
+
 #include <string>
 #include <vector>
 

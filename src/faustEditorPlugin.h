@@ -18,12 +18,14 @@ namespace godot {
     private:
         VBoxContainer *faustPanel = nullptr;
 
-        Ref<Faust2Godot> faustEffect;
+        Ref<Faust2Godot> faustEffect = nullptr;
 
         std::map<godot::String, HSlider*> sliderMap;
+
+        ExtendedMapUI *mapUI = nullptr;
     
     public:
-        FaustEditorPlugin();
+        FaustEditorPlugin(Ref<Faust2Godot> faustEffectRef = nullptr, ExtendedMapUI *mapUIPtr = NULL);
         ~FaustEditorPlugin();
 
         virtual void _enter_tree() override;
@@ -31,6 +33,10 @@ namespace godot {
         virtual void _exit_tree() override;
 
         void _on_slider_changed(double value, godot::String path);
+
+        void setMapUI(ExtendedMapUI *mapUIPtr);
+
+        void setDSPInstance(Ref<Faust2Godot> DSPInstance);
 
         static void _bind_methods();
     };
