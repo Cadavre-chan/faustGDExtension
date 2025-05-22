@@ -35,8 +35,7 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
         
         void *handle;
         dsp *dsp_instance;
-        MapUI *map_ui;
-        godot::String dspPath = "/home/kad/grame_internship/faustGDExtension/demo/dsp/libfoo.so"; // path to DSP .so file
+        ExtendedMapUI *map_ui;
 
     public:
         Faust2GodotEffectInstance();
@@ -71,10 +70,7 @@ class Faust2Godot : public godot::AudioEffect {
         Ref<Faust2GodotEffectInstance> instance = nullptr;
 
 
-        void init(godot::String path, int sample_rate) {
-            instance.ptr()->init(path, sample_rate);
-        };
-
+        void loadDSP(godot::String path, int pSampleRate);
 
         void set_param(godot::String path, float value) {
             instance.ptr()->set_param(path, value);

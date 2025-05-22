@@ -17,9 +17,11 @@ class FaustDSPManager : public Node {
         FaustEditorPlugin *editorPlugin = nullptr;
 
     public:
-        static void _bind_methods();
+        FaustDSPManager() {
+            faustInstance.instantiate();
+        }
 
-        static FaustDSPManager *getSingleton();
+        static void _bind_methods();
 
         void loadDSP(const godot::String &path);
 

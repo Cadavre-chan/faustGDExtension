@@ -23,13 +23,11 @@ Faust2GodotEffectInstance::Faust2GodotEffectInstance() {
     output[0] = new float[1024];
     output[1] = new float[1024];    
     sampleRate = AudioServer::get_singleton()->get_mix_rate();
-    map_ui = new MapUI();
-    this->init(dspPath, sampleRate);
+    map_ui = new ExtendedMapUI();
 }
 
 Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
     delete dsp_instance;
-    // dlclose(handle);
     delete[] input[0];
     delete[] input[1];
     delete[] input;
@@ -50,25 +48,15 @@ void Faust2GodotEffectInstance::_process(const void *srcptr, AudioFrame *dst, in
 }
 
 void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
-    UtilityFunctions::print("Initializing Effect Instance");
+    
+    CharString cpath = path.utf8();
+    handle = dlopen(cpath.get_data(), RTLD_NOW);
+    UtilityFunctions::print(path, " ", sample_rate);
 
     sampleRate = sample_rate;
-    handle = dlopen(path.utf8().get_data(), RTLD_NOW);
-    
-    if (!handle) {
-        UtilityFunctions::print("Failed to open DSP");
-    }
-    
+
     void *(*dspConstructor)() = (void*(*)())dlsym(handle, "newmydsp");
-    
-    if (!dspConstructor) {
-        UtilityFunctions::print("Failed to create DSP constructor");
-    }
-    
     dsp_instance = (dsp*) dspConstructor();
-    if (!dsp_instance) {
-        UtilityFunctions::print("Failed to use constructor");
-    }
     
     dsp_instance->buildUserInterface(map_ui);
     dsp_instance->init(sample_rate);
@@ -77,8 +65,6 @@ void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
     for (int i = 0; i < names.size(); i++) {
         UtilityFunctions::print(names[i]);
     }
-
-    this->set_param("/foo/drive", 5.0f);
 }
 
 void Faust2GodotEffectInstance::set_param(godot::String path, float value) {
@@ -103,7 +89,6 @@ godot::Array Faust2GodotEffectInstance::get_all_params() {
 
 void Faust2GodotEffectInstance::compute(const AudioFrame *src, AudioFrame *dst, int frames)
 {
-
     for (int i = 0; i < frames; i++) {
         input[0][i] = src[i].left;
         input[1][i] = src[i].right;
@@ -128,9 +113,17 @@ Ref<AudioEffectInstance> Faust2Godot::_instantiate() {
     return effectInstance;
 }
 
+void Faust2Godot::loadDSP(godot::String path, int pSampleRate) {
+    if (instance.is_null()) {
+        UtilityFunctions::printerr("Instance not initialized. Please add Faust2Godot to your audio bus before calling this function.");
+        return;
+    }
+    instance.ptr()->init(path, pSampleRate);
+}
+
 void Faust2Godot::_bind_methods() {
     ClassDB::bind_method(D_METHOD("setParam", "path", "value"), &Faust2Godot::set_param);
     ClassDB::bind_method(D_METHOD("getParam", "path"), &Faust2Godot::get_param);
     ClassDB::bind_method(D_METHOD("getAllParams"), &Faust2Godot::get_all_params);
+    ClassDB::bind_method(D_METHOD("loadDSP", "path", "sampleRate"), &Faust2Godot::loadDSP);
 }
-

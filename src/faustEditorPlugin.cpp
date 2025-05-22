@@ -21,9 +21,6 @@ void FaustEditorPlugin::_enter_tree() {
     title->set_text("Faust DSP Control Panel");
     faustPanel->add_child(title);
 
-    faustEffect->_instantiate();
-    faustEffect->init("/home/kad/grame_internship/faustGDExtension/demo/dsp/libfoo.so", 44100);
-
     Array paramPaths = faustEffect->get_all_params();
 
     for (int i = 0; i < paramPaths.size(); i++) {

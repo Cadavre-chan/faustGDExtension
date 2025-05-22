@@ -11,11 +11,15 @@
 using namespace godot;
 
 void initialize_example_module(ModuleInitializationLevel p_level) {
-    if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) return;
-    ClassDB::register_class<Faust2Godot>();
-	ClassDB::register_class<Faust2GodotEffectInstance>();
-	ClassDB::register_class<FaustEditorPlugin>();
-	ClassDB::register_class<FaustDSPManager>();
+    if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
+		ClassDB::register_class<Faust2Godot>();
+		ClassDB::register_class<Faust2GodotEffectInstance>();
+		ClassDB::register_class<FaustDSPManager>();
+	}
+
+    if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {
+        ClassDB::register_class<FaustEditorPlugin>();
+    }
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {}
@@ -27,7 +31,7 @@ GDExtensionBool GDE_EXPORT example_library_init(GDExtensionInterfaceGetProcAddre
 
 	init_obj.register_initializer(initialize_example_module);
 	init_obj.register_terminator(uninitialize_example_module);
-	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
+	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_EDITOR);
 
 	return init_obj.init();
 }
