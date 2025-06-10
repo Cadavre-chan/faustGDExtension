@@ -5,7 +5,7 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/ref.hpp>
 #include "faust2Godot.h"
-#include "faustEditorPlugin.h"
+#include "faustControlPanel.h"
 
 namespace godot {
 
@@ -14,10 +14,11 @@ class FaustDSPManager : public Node {
 
     private:
         Ref<Faust2Godot> faustInstance;
-        FaustEditorPlugin *editorPlugin = nullptr;
+        FaustControlPanel *editorPanel = nullptr;
 
     public:
         FaustDSPManager() {
+            UtilityFunctions::print("Constructing manager class!");
             faustInstance.instantiate();
         }
 

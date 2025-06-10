@@ -9,7 +9,7 @@ func _ready():
 	print("Initializing Faust DSP test...")
 
 	dsp_manager = FaustDSPManager.new()
-
+	add_child(dsp_manager)
 	faust_effect = dsp_manager.getDSPInstance()
 	if faust_effect == null:
 		print("Failed to get Faust audio effect.")

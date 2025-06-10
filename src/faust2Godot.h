@@ -35,7 +35,7 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
         
         void *handle;
         dsp *dsp_instance;
-        ExtendedMapUI *map_ui;
+        ExtendedMapUI *mapUI;
 
     public:
         Faust2GodotEffectInstance();
@@ -55,6 +55,7 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
     
         void compute(const AudioFrame *src, AudioFrame *dst, int frames);
 
+        ExtendedMapUI *getMapUI() const {return mapUI;}
         godot::Array get_all_params();
 };
 
@@ -85,6 +86,8 @@ class Faust2Godot : public godot::AudioEffect {
         godot::Array get_all_params() {
             return instance.ptr()->get_all_params();
         };
+
+        ExtendedMapUI *getMapUI() const {return instance->getMapUI();}
 };
 
 }

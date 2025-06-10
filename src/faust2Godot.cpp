@@ -23,7 +23,7 @@ Faust2GodotEffectInstance::Faust2GodotEffectInstance() {
     output[0] = new float[1024];
     output[1] = new float[1024];    
     sampleRate = AudioServer::get_singleton()->get_mix_rate();
-    map_ui = new ExtendedMapUI();
+    mapUI = new ExtendedMapUI();
 }
 
 Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
@@ -36,7 +36,7 @@ Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
     delete[] output[1];
     delete[] output;
 
-    delete map_ui;
+    delete mapUI;
 }
 
 void Faust2GodotEffectInstance::_bind_methods() {}
@@ -58,7 +58,7 @@ void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
     void *(*dspConstructor)() = (void*(*)())dlsym(handle, "newmydsp");
     dsp_instance = (dsp*) dspConstructor();
     
-    dsp_instance->buildUserInterface(map_ui);
+    dsp_instance->buildUserInterface(mapUI);
     dsp_instance->init(sample_rate);
     godot::Array names = this->get_all_params();
 
@@ -68,20 +68,20 @@ void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
 }
 
 void Faust2GodotEffectInstance::set_param(godot::String path, float value) {
-    map_ui->setParamValue(path.utf8().get_data(), value);
+    mapUI->setParamValue(path.utf8().get_data(), value);
 }
 
 float Faust2GodotEffectInstance::get_param(godot::String path) {
-    return map_ui->getParamValue(path.utf8().get_data());
+    return mapUI->getParamValue(path.utf8().get_data());
 }
 
 godot::Array Faust2GodotEffectInstance::get_all_params() {
     godot::Array paths;
 
-    int paramsCount = map_ui->getParamsCount();
+    int paramsCount = mapUI->getParamsCount();
 
     for (int i = 0; i < paramsCount; i++) {
-        paths.append(map_ui->getParamAddress(i).c_str());
+        paths.append(mapUI->getParamAddress(i).c_str());
     }
 
     return paths;
