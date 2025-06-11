@@ -24,7 +24,7 @@ class FaustDSPManager : public Node {
 
         static void _bind_methods();
 
-        void loadDSP(const godot::String &path);
+        void loadDSP(const godot::String &path, bool showControlPanel);
 
         Ref<Faust2Godot> getDSPInstance() const;
 

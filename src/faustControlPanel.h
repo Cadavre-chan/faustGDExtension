@@ -13,8 +13,8 @@
 
 
 namespace godot {
-    class FaustControlPanel : public Control {
-        GDCLASS(FaustControlPanel, Control);
+    class FaustControlPanel : public Window {
+        GDCLASS(FaustControlPanel, Window);
     
     private:
         VBoxContainer *faustPanel = nullptr;

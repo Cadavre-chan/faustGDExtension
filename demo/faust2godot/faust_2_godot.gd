@@ -23,7 +23,7 @@ func _ready():
 
 	print("Faust DSP added to bus '%s'" % bus_name)
 
-	dsp_manager.loadDSP("/home/kad/grame_internship/faustGDExtension/demo/dsp/libfoo.so")
+	dsp_manager.loadDSP("/home/kad/grame_internship/faustGDExtension/demo/dsp/libfoo.so", false)
 	# Step 5: Create a test AudioStreamPlayer
 	audio_player = AudioStreamPlayer.new()
 	add_child(audio_player)
