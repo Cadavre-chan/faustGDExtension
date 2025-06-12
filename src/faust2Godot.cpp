@@ -37,6 +37,13 @@ Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
     delete[] output;
 
     delete mapUI;
+
+    if (this->handle != NULL) {
+        dlclose(handle);
+    }
+    if (this->dsp_instance != NULL) {
+        this->dsp_instance->~dsp();
+    }
 }
 
 void Faust2GodotEffectInstance::_bind_methods() {}
@@ -100,6 +107,14 @@ void Faust2GodotEffectInstance::compute(const AudioFrame *src, AudioFrame *dst, 
         dst[i].left = output[0][i];
         dst[i].right = output[1][i];
     }
+}
+
+dsp *Faust2GodotEffectInstance::cloneDSP() {
+    return this->dsp_instance->clone();
+}
+
+void Faust2GodotEffectInstance::setDSP(dsp *DSP) {
+    this->dsp_instance = DSP;
 }
 
 Faust2Godot::Faust2Godot() {}

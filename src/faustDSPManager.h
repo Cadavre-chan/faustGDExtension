@@ -1,6 +1,7 @@
 #ifndef FAUST_DSP_MANAGER_H
 #define FAUST_DSP_MANAGER_H
 
+#include <map>
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/ref.hpp>
@@ -13,20 +14,19 @@ class FaustDSPManager : public Node {
     GDCLASS(FaustDSPManager, Node)
 
     private:
-        Ref<Faust2Godot> faustInstance;
-        FaustControlPanel *editorPanel = nullptr;
-
+        std::map<Ref<Faust2Godot>, FaustControlPanel*> instances;
     public:
         FaustDSPManager() {
             UtilityFunctions::print("Constructing manager class!");
-            faustInstance.instantiate();
         }
 
         static void _bind_methods();
 
-        void loadDSP(const godot::String &path, bool showControlPanel);
+        void loadDSP(const godot::String &path, bool showControlPanel, Ref<Faust2Godot> DSP);
 
-        Ref<Faust2Godot> getDSPInstance() const;
+        Ref<Faust2Godot> cloneDSP(const Ref<Faust2Godot> src);
+
+        Ref<Faust2Godot> createNewDSPInstance();
 
         virtual void _enter_tree() override;
         
