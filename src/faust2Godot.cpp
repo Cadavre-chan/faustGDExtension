@@ -19,7 +19,7 @@ Faust2GodotEffectInstance::Faust2GodotEffectInstance() {
     output[0] = new float[1024];
     output[1] = new float[1024];    
     sampleRate = AudioServer::get_singleton()->get_mix_rate();
-    mapUI = std::make_unique<ExtendedMapUI>();
+    mapUI = std::make_shared<ExtendedMapUI>();
 }
 
 Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
