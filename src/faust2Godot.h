@@ -5,8 +5,9 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <dlfcn.h>
 
-// #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/audio_stream_generator_playback.hpp>
 #include <godot_cpp/classes/audio_stream_generator.hpp>
 #include <godot_cpp/classes/audio_server.hpp>
@@ -21,21 +22,37 @@
 #include <godot_cpp/variant/string.hpp>
 #include <faust/dsp/dsp.h>
 #include <faust/gui/MapUI.h>
-
+#include <godot_cpp/variant/utility_functions.hpp>
 
 namespace godot {
+
+struct DLCloser {
+    void operator()(void *handle) const {
+        if (handle) dlclose(handle);
+    }
+};
+struct DSPCloser {
+    void operator()(dsp *dsp_instance) const {
+        if (dsp_instance) dsp_instance->~dsp();
+    }
+};
 
 class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
     GDCLASS(Faust2GodotEffectInstance, godot::AudioEffectInstance);
     
     private:
         int sampleRate;
-        float **input = NULL;
-        float **output = NULL;
+
+        /*
+        Input and output buffers are kept as raw pointers because it integrates better
+        with C++ Faust DSPs
+        */
+        float **input = nullptr;
+        float **output = nullptr;
         
-        void *handle = NULL;
-        dsp *dsp_instance = NULL;
-        ExtendedMapUI *mapUI = NULL;
+        std::unique_ptr<void, DLCloser> handle;
+        std::unique_ptr<dsp, DSPCloser> dsp_instance;
+        std::shared_ptr<ExtendedMapUI> mapUI;
 
     public:
         Faust2GodotEffectInstance();
@@ -55,11 +72,11 @@ class Faust2GodotEffectInstance : public godot::AudioEffectInstance {
     
         void compute(const AudioFrame *src, AudioFrame *dst, int frames);
 
-        dsp *cloneDSP();
+        std::unique_ptr<dsp, DSPCloser> cloneDSP();
 
-        void setDSP(dsp *DSP);
+        void setDSP(std::unique_ptr<dsp, DSPCloser> DSP);
 
-        ExtendedMapUI *getMapUI() const {return mapUI;}
+        std::shared_ptr<ExtendedMapUI> getMapUI() const {return mapUI;}
         godot::Array get_all_params();
 };
 
@@ -91,18 +108,18 @@ class Faust2Godot : public godot::AudioEffect {
             return instance.ptr()->get_all_params();
         };
 
-        dsp *cloneDSP() {
+        std::unique_ptr<dsp, DSPCloser> cloneDSP() {
             return this->instance->cloneDSP();
         }
 
-        void setDSP(dsp *DSP) {
-            this->instance->setDSP(DSP);
+        void setDSP(std::unique_ptr<dsp, DSPCloser> DSP) {
+            this->instance->setDSP(std::move(DSP));
         }
 
-        ExtendedMapUI *getMapUI() const {return instance->getMapUI();}
+        std::shared_ptr<ExtendedMapUI> getMapUI() const {return instance->getMapUI();}
 };
 
-}
+};
 
 
 #endif

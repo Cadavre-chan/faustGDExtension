@@ -3,11 +3,7 @@
 #ifndef FAUST2GODOT_CPP
 #define FAUST2GODOT_CPP
 
-#include <godot_cpp/variant/utility_functions.hpp>
 
-#include <dlfcn.h>
-
-#include <godot_cpp/classes/time.hpp>
 
 #endif
 
@@ -23,11 +19,10 @@ Faust2GodotEffectInstance::Faust2GodotEffectInstance() {
     output[0] = new float[1024];
     output[1] = new float[1024];    
     sampleRate = AudioServer::get_singleton()->get_mix_rate();
-    mapUI = new ExtendedMapUI();
+    mapUI = std::make_unique<ExtendedMapUI>();
 }
 
 Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
-    delete dsp_instance;
     delete[] input[0];
     delete[] input[1];
     delete[] input;
@@ -35,15 +30,6 @@ Faust2GodotEffectInstance::~Faust2GodotEffectInstance() {
     delete[] output[0];
     delete[] output[1];
     delete[] output;
-
-    delete mapUI;
-
-    if (this->handle != NULL) {
-        dlclose(handle);
-    }
-    if (this->dsp_instance != NULL) {
-        this->dsp_instance->~dsp();
-    }
 }
 
 void Faust2GodotEffectInstance::_bind_methods() {}
@@ -57,15 +43,16 @@ void Faust2GodotEffectInstance::_process(const void *srcptr, AudioFrame *dst, in
 void Faust2GodotEffectInstance::init(godot::String path, int sample_rate) {
     
     CharString cpath = path.utf8();
-    handle = dlopen(cpath.get_data(), RTLD_NOW);
+    handle = std::unique_ptr<void, DLCloser>( dlopen(cpath.get_data(), RTLD_NOW));
     UtilityFunctions::print(path, " ", sample_rate);
 
     sampleRate = sample_rate;
 
-    void *(*dspConstructor)() = (void*(*)())dlsym(handle, "newmydsp");
-    dsp_instance = (dsp*) dspConstructor();
+
+    void *(*dspConstructor)() = (void*(*)())dlsym(handle.get(), "newmydsp");
+    dsp_instance = std::unique_ptr<dsp, DSPCloser>((dsp *) dspConstructor());
     
-    dsp_instance->buildUserInterface(mapUI);
+    dsp_instance->buildUserInterface(mapUI.get());
     dsp_instance->init(sample_rate);
     godot::Array names = this->get_all_params();
 
@@ -109,12 +96,12 @@ void Faust2GodotEffectInstance::compute(const AudioFrame *src, AudioFrame *dst, 
     }
 }
 
-dsp *Faust2GodotEffectInstance::cloneDSP() {
-    return this->dsp_instance->clone();
+std::unique_ptr<dsp, DSPCloser> Faust2GodotEffectInstance::cloneDSP() {
+    return std::unique_ptr<dsp, DSPCloser>(this->dsp_instance->clone());
 }
 
-void Faust2GodotEffectInstance::setDSP(dsp *DSP) {
-    this->dsp_instance = DSP;
+void Faust2GodotEffectInstance::setDSP(std::unique_ptr<dsp, DSPCloser> DSP) {
+    this->dsp_instance = std::move(DSP);
 }
 
 Faust2Godot::Faust2Godot() {}

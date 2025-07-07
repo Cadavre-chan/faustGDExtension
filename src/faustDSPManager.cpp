@@ -17,7 +17,7 @@ void FaustDSPManager::loadDSP(const godot::String &path, bool showControlPanel, 
 
     if (showControlPanel) {
         this->instances.at(DSP) = memnew(godot::FaustControlPanel);
-        this->instances.at(DSP)->setUpPanel(DSP, DSP->getMapUI());
+        this->instances.at(DSP)->setUpPanel(DSP, DSP->getMapUI().get());
         get_tree()->get_root()->call_deferred( "add_child", this->instances.at(DSP));
         this->instances.at(DSP)->call_deferred("popup_centered");
     }
@@ -26,7 +26,7 @@ void FaustDSPManager::loadDSP(const godot::String &path, bool showControlPanel, 
 Ref<Faust2Godot> FaustDSPManager::cloneDSP(const Ref<Faust2Godot> src) {
     Ref<Faust2Godot> newDSP;
     newDSP.instantiate();
-    newDSP->setDSP(src->cloneDSP());
+    newDSP->setDSP(std::unique_ptr<dsp, DSPCloser>(src->cloneDSP()));
     instances.insert(std::pair<Ref<Faust2Godot>, FaustControlPanel*>(newDSP, nullptr));
     return newDSP;
 }
